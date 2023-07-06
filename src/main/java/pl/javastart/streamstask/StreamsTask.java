@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -57,19 +58,17 @@ public class StreamsTask {
 
     // metoda powinna zwracać wydatki zgrupowane po ID użytkownika
     Map<Long, List<Expense>> groupExpensesByUserId(Collection<User> users, List<Expense> expenses) {
-        Map<Long, List<Expense>> collect = expenses.stream()
+        return expenses.stream()
                 .collect(Collectors.groupingBy(Expense::getUserId));
-        return collect;
 //        throw new RuntimeException("Not implemented");
     }
 
     // metoda powinna zwracać wydatki zgrupowane po użytkowniku
     // podobne do poprzedniego, ale trochę trudniejsze
     Map<User, List<Expense>> groupExpensesByUser(Collection<User> users, List<Expense> expenses) {
+        Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, Function.identity()));
         return expenses.stream()
-                .collect(Collectors.groupingBy(expense -> users.stream().filter(user -> user.getId().equals(expense.getUserId()))
-                        .findAny()
-                        .orElse(null)));
+                .collect(Collectors.groupingBy(expense -> userMap.get(expense.getUserId())));
 //        throw new RuntimeException("Not implemented");
     }
 }
